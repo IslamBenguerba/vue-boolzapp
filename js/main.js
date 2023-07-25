@@ -1,50 +1,169 @@
-const input = document.getElementById('inputNumero')
-const btnNUmero = document.getElementById('btn-numeri')
-const card = document.getElementById('card')
-let array =[]
-let sommaTot = 0
-// mettendo card.innerHTML += `<span> il valore di ${sommaTot} è al massimo</span>` invece se mettiamo = blocchiamo l'imput
-btnNUmero.addEventListener('click',carica)
-function add(array){
-    return array.reduce((a,b) => a + b, 0)
-}
-function carica(){
-    
-    if (sommaTot < 50){
-        array.push(parseInt(input.value))
-        sommaTot = add(array)
-    }else{
-        card.innerHTML += `<span> il valore di ${sommaTot} è al massimo</span>`
+
+const { createApp } = Vue
+createApp({
+    data() {
+
+        return {
+            open :false,
+            newMessage: {
+                date: '',
+                message: '',
+                status: ""
+                
+            },
+            myAvatar:'img/avatar_io.jpg',
+            pathAvatar:'',
+            currentUser:{},
+            currentAvatar: "",
+            messaggiInviati: [],
+            messaggiRicevuti: [],
+            contatti: [
+                {
+                    name: "Michele",
+                    avatar: "_1",
+                    messages: [
+                        {
+                            date: "10/01/2020 15:30:55",
+                            message: "Hai portato a spasso il cane?",
+                            status: "sent",
+                        },
+                        {
+                            date: "10/01/2020 15:50:00",
+                            message: "Ricordati di dargli da mangiare",
+                            status: "sent",
+                        },
+                        {
+                            date: "10/01/2020 16:15:22",
+                            message: "Tutto fatto!",
+                            status: "received",
+                        },
+                        {
+                            date: "11/01/2020 16:15:22",
+                            message: "Tutto fatto!",
+                            status: "received",
+                        },
+                    ],
+                },
+                {
+                    name: "Fabio",
+                    avatar: "_2",
+                    messages: [
+                        {
+                            date: "20/03/2020 16:30:00",
+                            message: "Ciao come stai?",
+                            status: "sent",
+                        },
+                        {
+                            date: "20/03/2020 16:30:55",
+                            message: "Bene grazie! Stasera ci vediamo?",
+                            status: "received",
+                        },
+                        {
+                            date: "20/03/2020 16:35:00",
+                            message: "Mi piacerebbe ma devo andare a fare la spesa.",
+                            status: "received",
+                        },
+                    ],
+                },
+                {
+                    name: "Samuele",
+                    avatar: "_3",
+                    messages: [
+                        {
+                            date: "28/03/2020 10:10:40",
+                            message: "La Marianna va in campagna",
+                            status: "received",
+                        },
+                        {
+                            date: "28/03/2020 10:20:10",
+                            message: "Sicuro di non aver sbagliato chat?",
+                            status: "sent",
+                        },
+                        {
+                            date: "28/03/2020 16:15:22",
+                            message: "Ah scusa!",
+                            status: "received",
+                        },
+                    ],
+                },
+                {
+                    name: "Luisa",
+                    avatar: "_4",
+                    messages: [
+                        {
+                            date: "10/01/2020 15:30:55",
+                            message: "Lo sai che ha aperto una nuova pizzeria?",
+                            status: "sent",
+                        },
+                        {
+                            date: "10/01/2020 15:50:00",
+                            message: "Si, ma preferirei andare al cinema",
+                            status: "received",
+                        }
+                    ],
+                },
+            ]
+
+        }
+
+
+    },
+    methods: {
+        lastDate(item){
+            const lastdateIndex =item['messages'].length-1
+            //lasteDate prendiamo alla fine del array troviamo un oggetto e lo apriamo con la chiave date 
+            let lastDate =item['messages'][lastdateIndex]['date']
+            lastDate =lastDate.split(' ')
+            lastDateHours = lastDate[1]
+            console.log(lastdateIndex)
+            console.log(lastDateHours)
+            return lastDateHours
+        },
+        openChat(item) {
+            this.open=true
+            this.currentAvatar = item['avatar']
+            this.currentUser['name'] = item['name']
+            this.pathAvatar =`img/avatar${this.currentAvatar}.jpg`
+            console.log(this.currentAvatar)
+            this.messaggiInviati = []
+            this.messaggiRicevuti = []
+            for (let i = 0; i < item['messages'].length; i++) {
+                const messaggio = item['messages'][i]
+                if (messaggio['status'] === "received") {
+                    this.messaggiRicevuti.push(messaggio)
+                } else if (messaggio['status'] === "sent") {
+                    this.messaggiInviati.push(messaggio)
+                }
+            }
+        },
+        addNewMessage() {
+            let dataMessaggio = new Date
+            dataMessaggio = dataMessaggio.getHours() + ':' + dataMessaggio.getMinutes()
+            console.log(dataMessaggio)
+            const avatar = this.contatti.find((elemnt) => elemnt.avatar === this.currentAvatar)
+            this.newMessage['status'] = 'sent'
+            this.newMessage['date'] = dataMessaggio
+            avatar['messages'].push(this.newMessage)
+
+            this.messaggiInviati.push(this.newMessage)
+
+        }
+    },
+    beforeMount(){
+        this.open = true
+        this.currentAvatar =this.contatti[0]['avatar']
+        this.currentUser['name'] = this.contatti[0]['name']
+        this.pathAvatar =`img/avatar${this.currentAvatar}.jpg`
+        const firstUser = this.contatti[0]
+        for(let i = 0;i<firstUser['messages'].length;i++){
+            console.log(firstUser['messages'][i])
+            const messaggio = firstUser['messages'][i]
+            if(messaggio['status']=== "sent"){
+                this.messaggiInviati.push(messaggio)
+            }else if (messaggio['status'] === "received") {
+                this.messaggiRicevuti.push(messaggio)
+            }
+        }
+
     }
-    console.log(sommaTot)
-    console.log(array)
-    
-    
-}
-
-
-    // let sommaTot = 0
-    // if (sommaTot <50){
-    //     array.push( parseInt(input.value))
-    //     for ( i=0; i< array.length; i++){
-    //         sommaTot+= array[i]
-    //         console.log(sommaTot)
-    //     }
-    // }else{
-    //         console.log(`somma è al massimo ${sommaTot}`)
-    //     }
-    
-    // console.log(array)
-
-// btnNUmero.addEventListener('click',somma)
-// function somma(){
-//     let sommaTot = 0
-//     for ( i= 0; i< array.length; i++){
-//         if (sommaTot < 50){
-//             sommaTot += array[i]
-//         }else{
-//             console.log(`${sommaTot} è al massimo`)
-//         }
-//     }
-//     console.log(sommaTot)
-// }
+}).mount('#app')
