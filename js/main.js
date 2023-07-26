@@ -4,19 +4,19 @@ createApp({
     data() {
 
         return {
-            open :false,
+            isActive: false,
+            lastdateIndex: '',
             newMessage: {
                 date: '',
                 message: '',
                 status: ""
-                
+
             },
-            myAvatar:'img/avatar_io.jpg',
-            pathAvatar:'',
-            currentUser:{},
+            myAvatar: 'img/avatar',
+            pathAvatar: '',
+            currentUser: {},
             currentAvatar: "",
-            messaggiInviati: [],
-            messaggiRicevuti: [],
+            messaggi: [],
             contatti: [
                 {
                     name: "Michele",
@@ -102,6 +102,38 @@ createApp({
                         }
                     ],
                 },
+                {
+                    name: "mike",
+                    avatar: "_4",
+                    messages: [
+                        {
+                            date: "10/01/2020 15:30:55",
+                            message: "Lo sai che ha aperto una nuova pizzeria?",
+                            status: "sent",
+                        },
+                        {
+                            date: "10/01/2020 15:50:00",
+                            message: "Si, ma preferirei andare al cinema",
+                            status: "received",
+                        }
+                    ],
+                },
+                {
+                    name: "Luisa",
+                    avatar: "_4",
+                    messages: [
+                        {
+                            date: "10/01/2020 15:30:55",
+                            message: "Lo sai che ha aperto una nuova pizzeria?",
+                            status: "sent",
+                        },
+                        {
+                            date: "10/01/2020 15:50:00",
+                            message: "Si, ma preferirei andare al cinema",
+                            status: "received",
+                        }
+                    ],
+                },
             ]
 
         }
@@ -109,61 +141,78 @@ createApp({
 
     },
     methods: {
-        lastDate(item){
-            const lastdateIndex =item['messages'].length-1
-            //lasteDate prendiamo alla fine del array troviamo un oggetto e lo apriamo con la chiave date 
-            let lastDate =item['messages'][lastdateIndex]['date']
-            lastDate =lastDate.split(' ')
-            lastDateHours = lastDate[1]
-            console.log(lastdateIndex)
-            console.log(lastDateHours)
+        noteAccess() {
+            this.isActive = this.isActive ? false : true;
+
+        },
+        lastDate(item) {
+            this.lastdateIndex = (item['messages'].length) - 1
+            //lasteDate prendiamo alla fine del array troviamo un oggetto e lo apriamo con la chiave date
+
+            let lastDate = item['messages'][this.lastdateIndex]['date']
+            lastDate = lastDate.split(' ')
+            let lastDateHours = lastDate[1]
             return lastDateHours
         },
+        convertDateMsg(dateMsg){
+            let string = dateMsg.toString()
+            string = string.split(' ')
+            return string[1]
+
+            
+        },
         openChat(item) {
-            this.open=true
+
             this.currentAvatar = item['avatar']
             this.currentUser['name'] = item['name']
-            this.pathAvatar =`img/avatar${this.currentAvatar}.jpg`
+            this.pathAvatar = `img/avatar${this.currentAvatar}.jpg`
             console.log(this.currentAvatar)
-            this.messaggiInviati = []
-            this.messaggiRicevuti = []
+            this.messaggi = []
             for (let i = 0; i < item['messages'].length; i++) {
                 const messaggio = item['messages'][i]
-                if (messaggio['status'] === "received") {
-                    this.messaggiRicevuti.push(messaggio)
-                } else if (messaggio['status'] === "sent") {
-                    this.messaggiInviati.push(messaggio)
-                }
+                this.messaggi.push(messaggio)
             }
-        },
-        addNewMessage() {
-            let dataMessaggio = new Date
-            dataMessaggio = dataMessaggio.getHours() + ':' + dataMessaggio.getMinutes()
-            console.log(dataMessaggio)
-            const avatar = this.contatti.find((elemnt) => elemnt.avatar === this.currentAvatar)
-            this.newMessage['status'] = 'sent'
-            this.newMessage['date'] = dataMessaggio
-            avatar['messages'].push(this.newMessage)
-
-            this.messaggiInviati.push(this.newMessage)
-
-        }
     },
-    beforeMount(){
-        this.open = true
-        this.currentAvatar =this.contatti[0]['avatar']
+    addNewMessage() {
+        let dataMessaggio = new Date()
+        dataMessaggio =Intl.DateTimeFormat("it",{dateStyle:"short",timeStyle:'medium'}).format(dataMessaggio)
+
+        // dataMessaggio = dataMessaggio.getFullYear() + ' ' + dataMessaggio.getHours() + ':' + dataMessaggio.getMinutes()
+        console.log(dataMessaggio)
+        const avatar = this.contatti.find((elemnt) => elemnt.avatar === this.currentAvatar)
+        console.log(avatar)
+        const newhours = this.lastDate(avatar)
+        console.log(newhours)
+        this.newMessage['status'] = 'sent'
+        this.newMessage['date'] = dataMessaggio
+        const nuovoMessaggio = { ...this.newMessage }
+        avatar['messages'].push(nuovoMessaggio)
+        this.messaggi.push(nuovoMessaggio)
+        this.newMessage['message'] =''
+        // this.$nexTick() funziona allo stesso modo di avere un set time out 
+        setTimeout(()=>{
+            // const lastElement = this.$refs.boxmsg.lastElementChild
+            // console.log(lastElement)
+            // this.$refs.boxchat.scrollTop =this.$refs.boxchat.scrollHeight
+        })
+        
+        
+
+
+    }
+},
+    beforeMount() {
+
+        this.currentAvatar = this.contatti[0]['avatar']
         this.currentUser['name'] = this.contatti[0]['name']
-        this.pathAvatar =`img/avatar${this.currentAvatar}.jpg`
+        this.pathAvatar = `img/avatar${this.currentAvatar}.jpg`
         const firstUser = this.contatti[0]
-        for(let i = 0;i<firstUser['messages'].length;i++){
-            console.log(firstUser['messages'][i])
-            const messaggio = firstUser['messages'][i]
-            if(messaggio['status']=== "sent"){
-                this.messaggiInviati.push(messaggio)
-            }else if (messaggio['status'] === "received") {
-                this.messaggiRicevuti.push(messaggio)
-            }
-        }
+        for(let i = 0; i<firstUser['messages'].length; i++) {
+    console.log(firstUser['messages'][i])
+    const messaggio = firstUser['messages'][i]
+    this.messaggi.push(messaggio)
+    
+}
 
     }
 }).mount('#app')

@@ -14,72 +14,80 @@
 
 <body>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <header>
+    <!-- <header>
 
-    </header>
+    </header> -->
     <main>
-        <div class="container" id="app">
+        <div class="container-fluid" id="app">
             <div class="d-flex">
                 <div class=" container-contatti">
                     <div class="nav-top-user d-flex">
                         <div class="user-img me-3">
                             <img src="img/avatar_io.jpg" alt="">
                         </div>
-                        <span>Io</span>
+                        <h2>Io</h2>
                         <div class="button-peronals d-flex">
-                            <button class="btn btn-link"><i class="bi bi-arrow-repeat"></i></button>
+                            <button  class="btn btn-link" ><i class="bi bi-arrow-repeat"></i></button>
+                            
+
                             <button class="btn btn-link"><i class="bi bi-chat-left-fill"></i></button>
                         </div>
                     </div>
                     <div class="container-setting-note mt-3 d-flex">
-                        <i class="bi bi-bell-slash-fill banner-note"></i>
+                        <button class="btn btn-link" @click="noteAccess()"  :class="{activ:isActive}"><i class="bi bi-bell-slash-fill banner-note"></i></button>
+                        <button class="btn btn-link" @click="noteAccess()"  :class="{activ:!isActive}"><i class="bi bi-bell-fill banner-note"></i></button>
                         <div class="text-settin-note ">
-                            <h4>Ricevi notifice</h4>
-                            <a href="">Attiva notifiche</a>
+                            <h4>Ricevi notifice di nuovi messaggi</h4>
+                            <a href="">Attiva notifiche desktop</a>
                         </div>
                     </div>
                     <div class="input-chat d-flex">
-                        <i class="bi bi-search"></i>
-                        <input type="text" class="input-group p-2 border-0" placeholder="Chat">
+                        <button class="btn btn-link"><i class="bi bi-search"></i></button>
+                        <input type="text" class="input-group p-2 border-0" placeholder="Cerca o inizia una nuova chat">
                     </div>
 
                     <div class="container-list">
                         <ul class="list-group chtat">
-                            <li class="list-group-item list-group-item-action d-flex flex-column"@click="openChat(item)" v-for="(item,i) in contatti">
+                            <li class="list-group-item list-group-item-action d-flex "
+                                @click="openChat(item)" v-for="(item,i) in contatti">
                                 <div class="user-img">
-                                    <img :src="myAvatar" alt="">
+                                    <img :src="`img/avatar`+item['avatar']+`.jpg`" alt="">
                                 </div>
-                                <span  class="name-user">{{item['name']}}</span>
-                                <span>ultimo messaggio{{lastDate(item)}}</span>
+                                <span class="name-user">{{item['name']}}</span>
+                                <span class="time-msg">ultimo messaggio{{lastDate(item)}}</span>
                             </li>
                         </ul>
                     </div>
 
                 </div>
-                <div class="container-messaggi overflow-hidden"v-if="open === true">
-                    <div class="nav-user-chat d-flex align-items-center">
+                <!-- overflow-hidden -->
+                <div class="container-messaggi ">
+                    <div class="nav-top-user d-flex d-flex align-items-center">
                         <div class="user-img">
                             <img :src="pathAvatar" alt="">
                         </div>
                         <h2>{{currentUser['name']}}</h2>
                         <div class="box-buttons-user">
-                            <i class="bi bi-search"></i>
-                            <i class="bi bi-paperclip"></i>
+                            <button class="btn btn-link"><i class="bi bi-search"></i></button>
+                            <button class="btn btn-link"><i class="bi bi-paperclip"></i></button>
                         </div>
 
                     </div>
-                    <div class="box-chat-user overflow-auto" >
-                        <div class="btn btn-primary messaggiRicevuti mt-3" v-for="messaggio in messaggiRicevuti">
+                    <!-- overflow-auto -->
+                    <div class="box-chat-user " ref="boxchat">
+                        <div class="btn btn-primary  mt-3":class="messaggio['status']===`sent`? 'messaggiInviati':'messaggiRicevuti' " v-for="messaggio in messaggi" ref="boxmsg">
+                            <span class="test-msg">{{messaggio['message']}}</span> 
+                            <span class="time-msg">{{convertDateMsg(messaggio['date'])}}</span></div>
+                        <!-- <div class="btn btn-primary messaggiInviati mt-3" v-for="messaggio in messaggiInviati">
                             {{messaggio['message']}} {{messaggio['date']}}</div>
-                        <div class="btn btn-primary messaggiInviati mt-3" v-for="messaggio in messaggiInviati">
-                            {{messaggio['message']}} {{messaggio['date']}}</div>
-                    </div>
-                    <div class="input-chat">
-                        <button class="btn btn-link"><i class="bi bi-emoji-smile"></i></button>
-                        <input class="text-input" type="text" name="" id="" placeholder="srivi un messaggio"
-                            v-model="newMessage.message" @keyup.enter="addNewMessage()">
-                        <button class="btn btn-link"><i class="bi bi-mic"></i></button>
-                    </div>
+                    </div> -->
+                    
+                </div>
+                <div class="input-chat-text">
+                    <button class="btn btn-link"><i class="bi bi-emoji-smile"></i></button>
+                    <input class="text-input" type="text" name="" id="" placeholder="srivi un messaggio"
+                        v-model="newMessage.message" @keyup.enter="addNewMessage()">
+                    <button class="btn btn-link"><i class="bi bi-mic"></i></button>
                 </div>
             </div>
         </div>
